@@ -13,6 +13,9 @@
     
     <!-- Lucide Icons for modern icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <!-- Supabase Client Library -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <style>
         body {
@@ -43,9 +46,14 @@
             transition: transform 0.1s ease, box-shadow 0.1s ease;
         }
 
-        .btn-water:active {
+        .btn-water:active, .btn-water:disabled {
             transform: translate(2px, 2px);
             box-shadow: 2px 2px 0px 0px #0277bd;
+        }
+        
+        .btn-water:disabled {
+             background-color: #9e9e9e;
+             cursor: not-allowed;
         }
 
         .tab-water {
@@ -171,7 +179,6 @@
                     <button data-tab="jadwal" class="tab-water active flex-1 p-4 text-center text-sm md:text-base border-r border-dashed border-[#01579b]">Janji Temu</button>
                     <button data-tab="chat" class="tab-water flex-1 p-4 text-center text-sm md:text-base border-r border-dashed border-[#01579b]">Chat Privat</button>
                     <button data-tab="materi" class="tab-water flex-1 p-4 text-center text-sm md:text-base border-r border-dashed border-[#01579b]">Materi</button>
-                    <!-- TAB BARU UNTUK LAPORAN SISWA -->
                     <button data-tab="laporan-bk" class="tab-water flex-1 p-4 text-center text-sm md:text-base">Laporan BK</button>
                 </nav>
                 <div class="p-4 md:p-8">
@@ -213,14 +220,11 @@
                         <h3 class="font-bold text-2xl mb-4 text-cyan-600">Materi</h3>
                         <div id="materi-list" class="space-y-4 max-h-[60vh] overflow-y-auto pr-2"></div>
                     </div>
-                    <!-- KONTEN BARU UNTUK LAPORAN SISWA -->
                     <div id="laporan-bk-siswa" class="tab-content hidden">
                         <h3 class="font-bold text-2xl mb-4 text-cyan-600">Laporan Kegiatan BK</h3>
                         <div id="laporan-bk-siswa-list" class="space-y-4 max-h-[60vh] overflow-y-auto pr-2">
-                            <!-- Reports will be rendered here -->
                         </div>
                     </div>
-                    <!-- AKHIR KONTEN BARU -->
                 </div>
             </main>
         </div>
@@ -243,7 +247,6 @@
             <main class="bg-white rounded-2xl shadow-2xl overflow-hidden card-water">
                 <nav class="flex border-b-4 border-[#01579b]">
                     <button data-tab="jadwal" class="tab-water active flex-1 p-4 text-center text-sm md:text-base border-r border-dashed border-[#01579b]">Janji Temu</button>
-                    <!-- Perubahan 1: Mengganti nama tab untuk memperjelas fitur komunikasi/masukan siswa -->
                     <button data-tab="chat" class="tab-water flex-1 p-4 text-center text-sm md:text-base border-r border-dashed border-[#01579b]">Komunikasi Siswa</button>
                     <button data-tab="materi" class="tab-water flex-1 p-4 text-center text-sm md:text-base border-r border-dashed border-[#01579b]">Materi</button>
                     <button data-tab="laporan-bk" class="tab-water flex-1 p-4 text-center text-sm md:text-base">Laporan</button>
@@ -254,7 +257,6 @@
                         <div id="guru-bk-appointment-list" class="space-y-4"></div>
                     </div>
                     <div id="chat-guru-bk" class="tab-content hidden h-[60vh] flex flex-col">
-                         <!-- Perubahan 2: Menambahkan judul yang lebih jelas untuk kotak masuk siswa -->
                          <h3 class="font-bold text-2xl mb-4 text-teal-600">Kotak Masuk Siswa</h3>
                          <div class="mb-4">
                             <label for="chat-student-select-guru" class="block text-sm font-bold text-slate-700">Pilih Siswa:</label>
@@ -315,7 +317,6 @@
                     <button data-tab="users" class="tab-water active flex-1 p-4 text-center text-sm md:text-base">Kelola User</button>
                 </nav>
                 <div class="p-4 md:p-8">
-                    <!-- Tab Kelola User -->
                     <div id="users-admin" class="tab-content">
                         <h3 class="font-bold text-2xl mb-4 text-purple-600">Manajemen User</h3>
                          <form id="create-user-form" class="bg-purple-50 p-6 rounded-lg border-4 border-[#01579b] space-y-4 mb-8">
@@ -342,6 +343,17 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             lucide.createIcons();
+            
+            // --- KONEKSI KE SUPABASE ---
+            // Ganti dengan URL dan Kunci Anon dari proyek Supabase Anda!
+            const SUPABASE_URL = 'https://dbrtyyfgqwvjaazynirn.supabase.co';
+            const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRicnR5eWZncXd2amFhenluaXJuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjEwMjUyNTUsImV4cCI6MjA3NjYwMTI1NX0.b3NYno15SDjkhcgVYyXObV7Q4NsSxyVL3j57AmF6YMQ';
+
+            if (SUPABASE_URL === 'URL_PROYEK_SUPABASE_ANDA' || SUPABASE_ANON_KEY === 'KUNCI_ANON_PUBLIK_ANDA') {
+                alert('PENTING: Harap konfigurasikan SUPABASE_URL dan SUPABASE_ANON_KEY di dalam kode file HTML ini agar aplikasi dapat terhubung ke database online Anda.');
+            }
+
+            const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
             // === Elemen Tampilan ===
             const roleSelectionView = document.getElementById('role-selection-view');
@@ -365,9 +377,7 @@
             
             // === Fungsi Pengalih Tampilan ===
             const showView = (viewToShow) => {
-                // Ensure all views are hidden initially
                 [roleSelectionView, studentLoginView, guruBkLoginView, adminLoginView, siswaView, guruBkView, adminView].forEach(v => v.classList.add('hidden'));
-                // Show the target view
                 viewToShow.classList.remove('hidden');
             };
 
@@ -379,7 +389,6 @@
                 const targetTab = Array.from(tabs).find(t => t.getAttribute('data-tab') === targetTabId);
                 if (targetTab) targetTab.classList.add('active');
                 
-                // Get the base ID (e.g., 'siswa' from 'siswa-view')
                 const baseId = view.id.split('-')[0];
 
                 contents.forEach(c => c.classList.add('hidden'));
@@ -388,9 +397,13 @@
             };
 
             // === Fungsi Bersama (Shared Functions) ===
-            const getUserData = (id) => {
-                const accounts = JSON.parse(localStorage.getItem('userAccounts') || '[]');
-                return accounts.find(acc => acc.id === id);
+            const getUserData = async (id) => {
+                 const { data, error } = await supabaseClient.from('userAccounts').select('*').eq('id', id).single();
+                 if (error) {
+                     console.error("Error fetching user data:", error);
+                     return null;
+                 }
+                 return data;
             };
 
             const getStatusBadge = (status) => {
@@ -406,12 +419,9 @@
                 let messageClass, alignmentClass;
 
                 if (role === 'siswa') {
-                    // Siswa's outgoing messages are blue/cyan, incoming (from Guru) are white/default
                     messageClass = isUser ? 'bg-blue-400 text-[#01579b] ml-auto' : 'bg-white text-[#01579b]';
                     alignmentClass = isUser ? 'justify-end' : 'justify-start';
-                } else { // guru-bk
-                    // Guru BK's outgoing messages are teal/default, incoming (from Siswa) are white/default
-                    // NOTE: In Guru BK view, 'user' refers to the GURU BK (the local user). 'other' refers to the STUDENT.
+                } else { 
                     messageClass = isUser ? 'bg-teal-400 text-[#01579b] ml-auto' : 'bg-white text-[#01579b]';
                     alignmentClass = isUser ? 'justify-end' : 'justify-start';
                 }
@@ -419,22 +429,11 @@
                 return `
                     <div class="flex ${alignmentClass}">
                         <div class="max-w-xs md:max-w-sm rounded-xl p-3 shadow-md border-2 border-[#01579b] ${messageClass}">
-                            ${message}
+                            ${message.replace(/</g, "&lt;").replace(/>/g, "&gt;")}
                         </div>
                     </div>
                 `;
             };
-            
-            // Set up default accounts if none exist
-            if (!localStorage.getItem('userAccounts')) {
-                const defaultAccounts = [
-                    { id: 'siswa-001', role: 'siswa', name: 'Budi Santoso', username: 'budi', password: '123' },
-                    { id: 'siswa-002', role: 'siswa', name: 'Citra Dewi', username: 'citra', password: '123' },
-                    { id: 'guru-bk-001', role: 'guru-bk', name: 'Ibu Rina', username: 'rina', password: '123' },
-                ];
-                localStorage.setItem('userAccounts', JSON.stringify(defaultAccounts));
-            }
-
 
             // =============================
             // === LOGIKA UNTUK SISWA ======
@@ -443,22 +442,29 @@
             const studentNameDisplay = document.getElementById('student-name-display');
             const studentIdDisplay = document.getElementById('student-id-display');
             
-            function initSiswaView() {
-                studentId = localStorage.getItem('currentUserId');
+            async function initSiswaView() {
+                studentId = sessionStorage.getItem('currentUserId');
                 if (!studentId) { showView(roleSelectionView); return; }
-                const userData = getUserData(studentId);
+                const userData = await getUserData(studentId);
                 studentNameDisplay.textContent = `Selamat Datang, ${userData ? userData.name : 'Siswa'}`;
                 studentIdDisplay.textContent = `ID Sesi: ${studentId}`;
                 renderStudentAppointments();
                 renderMateriListSiswa();
-                renderStudentLaporanList(); // <--- PANGGIL FUNGSI LAPORAN UNTUK SISWA
+                renderStudentLaporanList(); 
                 showView(siswaView);
             }
             
-            const renderStudentAppointments = () => {
-                const allAppointments = JSON.parse(localStorage.getItem('appointments') || '[]');
-                const myAppointments = allAppointments.filter(app => app.studentId === studentId).sort((a,b) => new Date(b.date) - new Date(a.date));
+            const renderStudentAppointments = async () => {
                 const appointmentList = document.getElementById('appointment-list');
+                appointmentList.innerHTML = '<p class="text-slate-500 text-center">Memuat jadwal...</p>';
+                const { data: myAppointments, error } = await supabaseClient.from('appointments').select('*').eq('studentId', studentId).order('date', { ascending: false });
+
+                if (error) {
+                    console.error("Error fetching appointments:", error);
+                    appointmentList.innerHTML = '<p class="text-red-500 text-center">Gagal memuat jadwal.</p>';
+                    return;
+                }
+                
                 appointmentList.innerHTML = '';
                 if (myAppointments.length === 0) {
                     appointmentList.innerHTML = '<p class="text-slate-500 text-center">Belum ada janji temu.</p>';
@@ -478,21 +484,28 @@
                 });
             };
 
-            const renderSiswaChat = () => {
-                const allChats = JSON.parse(localStorage.getItem('chats') || '{}');
-                const myChat = allChats[studentId] || [];
+            const renderSiswaChat = async () => {
                 const chatMessagesSiswa = document.getElementById('chat-messages-siswa');
+                const { data, error } = await supabaseClient.from('chats').select('messages').eq('student_id', studentId).single();
+                
+                const myChat = data ? data.messages : [];
                 chatMessagesSiswa.innerHTML = '';
-                // Ensure chat is displayed based on sender: 'user' is Siswa, 'guru' is Guru BK
                 myChat.forEach(chat => {
                     chatMessagesSiswa.innerHTML += renderChatMessage(chat.message, chat.sender === 'user' ? 'user' : 'other', 'siswa');
                 });
                 chatMessagesSiswa.scrollTop = chatMessagesSiswa.scrollHeight;
             };
 
-            const renderMateriListSiswa = () => {
-                const materiList = JSON.parse(localStorage.getItem('materi') || '[]');
+            const renderMateriListSiswa = async () => {
                 const materiListSiswa = document.getElementById('materi-list');
+                materiListSiswa.innerHTML = '<p class="text-center text-slate-500">Memuat materi...</p>';
+                const { data: materiList, error } = await supabaseClient.from('materi').select('*').order('created_at', { ascending: false });
+
+                if(error) {
+                    materiListSiswa.innerHTML = '<p class="text-center text-red-500">Gagal memuat materi.</p>';
+                    return;
+                }
+                
                 materiListSiswa.innerHTML = '';
                 if (materiList.length === 0) {
                     materiListSiswa.innerHTML = '<p class="text-center text-slate-500">Belum ada materi yang ditambahkan.</p>';
@@ -509,10 +522,16 @@
                 });
             };
             
-            // FUNGSI BARU UNTUK LAPORAN SISWA
-            const renderStudentLaporanList = () => {
-                const laporanBk = JSON.parse(localStorage.getItem('laporanBk') || '[]').sort((a,b) => new Date(b.tanggal) - new Date(a.tanggal));
+            const renderStudentLaporanList = async () => {
                 const listEl = document.getElementById('laporan-bk-siswa-list');
+                listEl.innerHTML = '<p class="text-center text-slate-500">Memuat laporan...</p>';
+                const { data: laporanBk, error } = await supabaseClient.from('laporanBk').select('*').order('tanggal', { ascending: false });
+
+                if(error){
+                    listEl.innerHTML = '<p class="text-center text-red-500">Gagal memuat laporan.</p>';
+                    return;
+                }
+
                 listEl.innerHTML = '';
                 if (laporanBk.length === 0) {
                     listEl.innerHTML = '<p class="text-center text-slate-500">Belum ada laporan kegiatan BK yang dibagikan.</p>';
@@ -531,19 +550,32 @@
                 });
             };
             
-            document.getElementById('appointment-form').addEventListener('submit', (e) => {
+            document.getElementById('appointment-form').addEventListener('submit', async (e) => {
                 e.preventDefault();
-                const allAppointments = JSON.parse(localStorage.getItem('appointments') || '[]');
-                const userData = getUserData(studentId);
+                const submitBtn = e.target.querySelector('button[type="submit"]');
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Mengajukan...';
+
+                const userData = await getUserData(studentId);
                 const newAppointment = {
-                    id: 'app-' + Date.now(), studentId, status: 'Menunggu',
+                    id: 'app-' + Date.now(), studentId,
                     name: userData ? userData.name : 'Unknown',
                     class: document.getElementById('kelas').value,
                     topic: document.getElementById('topik').value,
                     date: document.getElementById('tanggal').value,
                 };
-                allAppointments.push(newAppointment);
-                localStorage.setItem('appointments', JSON.stringify(allAppointments));
+
+                const { error } = await supabaseClient.from('appointments').insert([newAppointment]);
+                
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Ajukan Jadwal';
+
+                if(error){
+                    alert('Gagal mengajukan jadwal. Coba lagi.');
+                    console.error("Error inserting appointment:", error);
+                    return;
+                }
+
                 e.target.reset();
                 const successMessage = document.getElementById('success-message');
                 successMessage.classList.remove('hidden');
@@ -551,29 +583,32 @@
                 renderStudentAppointments();
             });
 
-            document.getElementById('send-btn-siswa').addEventListener('click', () => {
+            document.getElementById('send-btn-siswa').addEventListener('click', async () => {
                 const chatInputSiswa = document.getElementById('chat-input-siswa');
                 const message = chatInputSiswa.value.trim();
                 if (message) {
-                    let allChats = JSON.parse(localStorage.getItem('chats') || '{}');
-                    if (!allChats[studentId]) allChats[studentId] = [];
-                    // Sender 'user' means the local user (Siswa)
-                    allChats[studentId].push({ message, sender: 'user', timestamp: Date.now() });
-                    localStorage.setItem('chats', JSON.stringify(allChats));
+                    const { data } = await supabaseClient.from('chats').select('messages').eq('student_id', studentId).single();
+                    const currentMessages = data ? data.messages : [];
+                    currentMessages.push({ message, sender: 'user', timestamp: Date.now() });
+
+                    const { error } = await supabaseClient.from('chats').upsert({ student_id: studentId, messages: currentMessages });
+
+                    if(error){
+                        console.error("Error sending message:", error);
+                        return;
+                    }
                     chatInputSiswa.value = '';
                     renderSiswaChat();
                 }
             });
+
             document.getElementById('chat-input-siswa').addEventListener('keypress', (e) => {
-                 if (e.key === 'Enter') {
-                    document.getElementById('send-btn-siswa').click();
-                }
+                 if (e.key === 'Enter') document.getElementById('send-btn-siswa').click();
             });
 
             siswaView.querySelector('.tab-water[data-tab="jadwal"]').addEventListener('click', () => switchTab(siswaView, 'jadwal'));
             siswaView.querySelector('.tab-water[data-tab="chat"]').addEventListener('click', () => { switchTab(siswaView, 'chat'); renderSiswaChat(); });
             siswaView.querySelector('.tab-water[data-tab="materi"]').addEventListener('click', () => { switchTab(siswaView, 'materi'); renderMateriListSiswa(); });
-            // LISTENER BARU UNTUK LAPORAN SISWA
             siswaView.querySelector('.tab-water[data-tab="laporan-bk"]').addEventListener('click', () => { switchTab(siswaView, 'laporan-bk'); renderStudentLaporanList(); });
 
 
@@ -583,10 +618,10 @@
             let guruBkId;
             let selectedStudentIdForGuru = null;
             
-            function initGuruBkView() {
-                guruBkId = localStorage.getItem('currentUserId');
+            async function initGuruBkView() {
+                guruBkId = sessionStorage.getItem('currentUserId');
                 if (!guruBkId) { showView(roleSelectionView); return; }
-                const userData = getUserData(guruBkId);
+                const userData = await getUserData(guruBkId);
                 document.getElementById('guru-bk-name-display').textContent = `Dasbor Guru: ${userData ? userData.name : 'Guru BK'}`;
                 renderGuruBkAppointments();
                 renderGuruBkChatUsers();
@@ -595,9 +630,16 @@
                 showView(guruBkView);
             }
             
-            const renderGuruBkAppointments = () => {
-                const allAppointments = JSON.parse(localStorage.getItem('appointments') || '[]').sort((a,b) => new Date(b.date) - new Date(a.date));
+            const renderGuruBkAppointments = async () => {
                 const listEl = document.getElementById('guru-bk-appointment-list');
+                listEl.innerHTML = '<p class="text-slate-500 text-center py-8">Memuat janji temu...</p>';
+                const { data: allAppointments, error } = await supabaseClient.from('appointments').select('*').order('date', { ascending: false });
+                
+                if (error) {
+                    listEl.innerHTML = '<p class="text-red-500 text-center py-8">Gagal memuat data.</p>';
+                    return;
+                }
+
                 listEl.innerHTML = '';
                 if (allAppointments.length === 0) {
                     listEl.innerHTML = '<p class="text-slate-500 text-center py-8">Tidak ada janji temu yang masuk.</p>';
@@ -620,24 +662,23 @@
                             ` : `<p class="text-sm text-slate-500">Telah direspon</p>`}
                         </div>`;
                     listEl.appendChild(el);
-                    lucide.createIcons(); // Re-render icons after adding new elements
+                    lucide.createIcons();
                 });
             };
 
-            const renderGuruBkChatUsers = () => {
-                const allUsers = JSON.parse(localStorage.getItem('userAccounts') || '[]');
-                const students = allUsers.filter(u => u.role === 'siswa');
+            const renderGuruBkChatUsers = async () => {
+                const { data: students, error } = await supabaseClient.from('userAccounts').select('*').eq('role', 'siswa');
                 const selectEl = document.getElementById('chat-student-select-guru');
                 selectEl.innerHTML = '<option value="">Pilih Siswa...</option>';
+                if(error) return;
+
                 students.forEach(acc => {
                     const option = document.createElement('option');
                     option.value = acc.id;
                     option.textContent = acc.name;
                     selectEl.appendChild(option);
                 });
-                // Set default selected student if available
                 if (students.length > 0) {
-                    // Only set if no student is selected yet or if the currently selected one is gone
                     if (!selectedStudentIdForGuru || !students.some(s => s.id === selectedStudentIdForGuru)) {
                        selectedStudentIdForGuru = students[0].id;
                     }
@@ -648,29 +689,32 @@
                 renderGuruBkChat();
             };
 
-            const renderGuruBkChat = () => {
+            const renderGuruBkChat = async () => {
                 const chatMessagesEl = document.getElementById('chat-messages-guru-bk');
                 if (!selectedStudentIdForGuru) {
                     chatMessagesEl.innerHTML = '<p class="text-center text-slate-500 mt-8">Pilih siswa untuk memulai percakapan.</p>';
                     return;
                 }
-                const allChats = JSON.parse(localStorage.getItem('chats') || '{}');
-                const chatHistory = allChats[selectedStudentIdForGuru] || [];
+                const { data, error } = await supabaseClient.from('chats').select('messages').eq('student_id', selectedStudentIdForGuru).single();
+                const chatHistory = data ? data.messages : [];
                 chatMessagesEl.innerHTML = '';
-                // Ensure chat is displayed based on sender: 'user' is Siswa, 'guru' is Guru BK
-                // In this view (Guru BK), we reverse the roles for renderChatMessage function
                 chatHistory.forEach(chat => {
-                    // If the original sender was 'user' (Siswa), it's 'other' (incoming) here.
-                    // If the original sender was 'guru' (Guru BK), it's 'user' (outgoing) here.
                     const senderRole = chat.sender === 'user' ? 'other' : 'user';
                     chatMessagesEl.innerHTML += renderChatMessage(chat.message, senderRole, 'guru-bk');
                 });
                 chatMessagesEl.scrollTop = chatMessagesEl.scrollHeight;
             };
 
-            const renderGuruBkMateriList = () => {
-                const materiList = JSON.parse(localStorage.getItem('materi') || '[]');
+            const renderGuruBkMateriList = async () => {
                 const listEl = document.getElementById('materi-list-guru-bk');
+                listEl.innerHTML = '<p class="text-center text-slate-500">Memuat materi...</p>';
+                const { data: materiList, error } = await supabaseClient.from('materi').select('*').order('created_at', { ascending: false });
+
+                if(error){
+                    listEl.innerHTML = '<p class="text-center text-red-500">Gagal memuat materi.</p>';
+                    return;
+                }
+
                 listEl.innerHTML = '';
                  if (materiList.length === 0) {
                     listEl.innerHTML = '<p class="text-center text-slate-500">Tidak ada materi yang tersimpan.</p>';
@@ -692,9 +736,16 @@
                 });
             };
 
-            const renderGuruBkLaporanList = () => {
-                const laporanBk = JSON.parse(localStorage.getItem('laporanBk') || '[]').sort((a,b) => new Date(b.tanggal) - new Date(a.tanggal));
+            const renderGuruBkLaporanList = async () => {
                 const listEl = document.getElementById('laporan-bk-list-guru-bk');
+                listEl.innerHTML = '<p class="text-center text-slate-500">Memuat laporan...</p>';
+                const { data: laporanBk, error } = await supabaseClient.from('laporanBk').select('*').order('tanggal', { ascending: false });
+
+                if(error) {
+                    listEl.innerHTML = '<p class="text-center text-red-500">Gagal memuat laporan.</p>';
+                    return;
+                }
+                
                 listEl.innerHTML = '';
                 if (laporanBk.length === 0) {
                     listEl.innerHTML = '<p class="text-center text-slate-500">Tidak ada data laporan yang tersimpan.</p>';
@@ -718,43 +769,32 @@
                 });
             };
 
-            guruBkView.addEventListener('click', (e) => {
+            guruBkView.addEventListener('click', async (e) => {
                 const actionBtn = e.target.closest('.action-btn');
                 if (actionBtn) {
-                    let allAppointments = JSON.parse(localStorage.getItem('appointments') || '[]');
                     const id = actionBtn.dataset.id;
                     const action = actionBtn.dataset.action;
-                    const appIndex = allAppointments.findIndex(app => app.id === id);
-                    if (appIndex > -1) {
-                        allAppointments[appIndex].status = action === 'approve' ? 'Dikonfirmasi' : 'Ditolak';
-                        localStorage.setItem('appointments', JSON.stringify(allAppointments));
-                        renderGuruBkAppointments();
-                    }
+                    const newStatus = action === 'approve' ? 'Dikonfirmasi' : 'Ditolak';
+                    
+                    const { error } = await supabaseClient.from('appointments').update({ status: newStatus }).eq('id', id);
+                    if (error) console.error("Error updating appointment:", error);
+                    else renderGuruBkAppointments();
                 }
                 
-                // Hapus Materi
                 const deleteMateriBtn = e.target.closest('.delete-materi-btn');
                 if (deleteMateriBtn) {
                     const id = deleteMateriBtn.dataset.id;
-                    let allMateri = JSON.parse(localStorage.getItem('materi') || '[]').filter(m => m.id !== id);
-                    localStorage.setItem('materi', JSON.stringify(allMateri));
-                    renderGuruBkMateriList();
-                    // Juga perlu memperbarui tampilan materi siswa jika mereka sedang melihatnya
-                    if (siswaView.classList.contains('view') && !siswaView.classList.contains('hidden')) {
-                         renderMateriListSiswa();
-                    }
+                    const { error } = await supabaseClient.from('materi').delete().eq('id', id);
+                    if (error) console.error("Error deleting materi:", error);
+                    else renderGuruBkMateriList();
                 }
-                // Hapus Laporan
+
                 const deleteLaporanBtn = e.target.closest('.delete-laporan-bk-btn');
                 if (deleteLaporanBtn) {
                     const id = deleteLaporanBtn.dataset.id;
-                    let allLaporan = JSON.parse(localStorage.getItem('laporanBk') || '[]').filter(l => l.id !== id);
-                    localStorage.setItem('laporanBk', JSON.stringify(allLaporan));
-                    renderGuruBkLaporanList();
-                    // Juga perlu memperbarui tampilan laporan siswa
-                    if (siswaView.classList.contains('view') && !siswaView.classList.contains('hidden')) {
-                         renderStudentLaporanList();
-                    }
+                    const { error } = await supabaseClient.from('laporanBk').delete().eq('id', id);
+                    if (error) console.error("Error deleting laporan:", error);
+                    else renderGuruBkLaporanList();
                 }
             });
 
@@ -763,59 +803,56 @@
                 renderGuruBkChat();
             });
 
-            document.getElementById('send-btn-guru-bk').addEventListener('click', () => {
+            document.getElementById('send-btn-guru-bk').addEventListener('click', async () => {
                 const chatInput = document.getElementById('chat-input-guru-bk');
                 const message = chatInput.value.trim();
                 if (message && selectedStudentIdForGuru) {
-                    let allChats = JSON.parse(localStorage.getItem('chats') || '{}');
-                    if (!allChats[selectedStudentIdForGuru]) allChats[selectedStudentIdForGuru] = [];
-                    // Sender 'guru' means the local user (Guru BK)
-                    allChats[selectedStudentIdForGuru].push({ message, sender: 'guru', timestamp: Date.now() });
-                    localStorage.setItem('chats', JSON.stringify(allChats));
+                     const { data } = await supabaseClient.from('chats').select('messages').eq('student_id', selectedStudentIdForGuru).single();
+                    const currentMessages = data ? data.messages : [];
+                    currentMessages.push({ message, sender: 'guru', timestamp: Date.now() });
+
+                    const { error } = await supabaseClient.from('chats').upsert({ student_id: selectedStudentIdForGuru, messages: currentMessages });
+
+                    if(error){
+                        console.error("Error sending message:", error);
+                        return;
+                    }
                     chatInput.value = '';
                     renderGuruBkChat();
                 }
             });
             document.getElementById('chat-input-guru-bk').addEventListener('keypress', (e) => {
-                 if (e.key === 'Enter') {
-                    document.getElementById('send-btn-guru-bk').click();
-                }
+                 if (e.key === 'Enter') document.getElementById('send-btn-guru-bk').click();
             });
 
-            document.getElementById('materi-form-guru-bk').addEventListener('submit', (e) => {
+            document.getElementById('materi-form-guru-bk').addEventListener('submit', async (e) => {
                 e.preventDefault();
-                const allMateri = JSON.parse(localStorage.getItem('materi') || '[]');
                 const newMateri = {
                     id: 'materi-' + Date.now(),
                     judul: document.getElementById('materi-judul-guru-bk').value,
                     konten: document.getElementById('materi-konten-guru-bk').value,
                 };
-                allMateri.push(newMateri);
-                localStorage.setItem('materi', JSON.stringify(allMateri));
-                e.target.reset();
-                renderGuruBkMateriList();
-                // Perbarui tampilan materi siswa secara langsung
-                if (siswaView.classList.contains('view') && !siswaView.classList.contains('hidden')) {
-                    renderMateriListSiswa();
+                const { error } = await supabaseClient.from('materi').insert([newMateri]);
+                if (error) console.error("Error creating materi:", error);
+                else {
+                    e.target.reset();
+                    renderGuruBkMateriList();
                 }
             });
 
-             document.getElementById('laporan-bk-form-guru-bk').addEventListener('submit', (e) => {
+            document.getElementById('laporan-bk-form-guru-bk').addEventListener('submit', async (e) => {
                 e.preventDefault();
-                const laporanBk = JSON.parse(localStorage.getItem('laporanBk') || '[]');
                 const newLaporan = {
                     id: 'laporan-' + Date.now(),
                     kegiatan: document.getElementById('laporan-bk-kegiatan-guru-bk').value,
                     deskripsi: document.getElementById('laporan-bk-deskripsi-guru-bk').value,
                     tanggal: document.getElementById('laporan-bk-tanggal-guru-bk').value,
                 };
-                laporanBk.push(newLaporan);
-                localStorage.setItem('laporanBk', JSON.stringify(laporanBk));
-                e.target.reset();
-                renderGuruBkLaporanList();
-                // Perbarui tampilan laporan siswa secara langsung
-                 if (siswaView.classList.contains('view') && !siswaView.classList.contains('hidden')) {
-                    renderStudentLaporanList();
+                const { error } = await supabaseClient.from('laporanBk').insert([newLaporan]);
+                if(error) console.error("Error creating laporan:", error);
+                else {
+                    e.target.reset();
+                    renderGuruBkLaporanList();
                 }
             });
             
@@ -840,9 +877,16 @@
                 showView(adminView);
             }
             
-            const renderUserListAdmin = () => {
-                const allAccounts = JSON.parse(localStorage.getItem('userAccounts') || '[]');
+            const renderUserListAdmin = async () => {
                 const userListAdmin = document.getElementById('user-list-admin');
+                userListAdmin.innerHTML = '<p class="text-center text-slate-500">Memuat pengguna...</p>';
+                const { data: allAccounts, error } = await supabaseClient.from('userAccounts').select('*').order('created_at', { ascending: false });
+
+                if(error){
+                    userListAdmin.innerHTML = '<p class="text-center text-red-500">Gagal memuat pengguna.</p>';
+                    return;
+                }
+                
                 userListAdmin.innerHTML = '';
                 if (allAccounts.length === 0) {
                     userListAdmin.innerHTML = '<p class="text-center text-slate-500">Belum ada akun yang dibuat.</p>';
@@ -871,14 +915,16 @@
                 });
             };
 
-            document.getElementById('create-user-form').addEventListener('submit', (e) => {
+            document.getElementById('create-user-form').addEventListener('submit', async (e) => {
                 e.preventDefault();
-                const accounts = JSON.parse(localStorage.getItem('userAccounts') || '[]');
                 const username = document.getElementById('user-username').value;
-                if (accounts.some(acc => acc.username === username)) {
+                const { data, error: checkError } = await supabaseClient.from('userAccounts').select('id').eq('username', username);
+
+                if (data && data.length > 0) {
                     alert('Username sudah digunakan!');
                     return;
                 }
+                
                 const newAccount = {
                     id: (document.getElementById('user-role').value) + '-' + Date.now(),
                     role: document.getElementById('user-role').value,
@@ -886,34 +932,29 @@
                     username: username,
                     password: document.getElementById('user-password').value,
                 };
-                accounts.push(newAccount);
-                localStorage.setItem('userAccounts', JSON.stringify(accounts));
-                e.target.reset();
-                renderUserListAdmin();
+                const { error } = await supabaseClient.from('userAccounts').insert([newAccount]);
+                if(error) console.error("Error creating user:", error);
+                else {
+                    e.target.reset();
+                    renderUserListAdmin();
+                }
             });
 
-            document.getElementById('user-list-admin').addEventListener('click', (e) => {
+            document.getElementById('user-list-admin').addEventListener('click', async (e) => {
                 const deleteBtn = e.target.closest('.delete-user-btn');
                 if (deleteBtn) {
                     const idToDelete = deleteBtn.dataset.id;
-                    let accounts = JSON.parse(localStorage.getItem('userAccounts') || '[]').filter(acc => acc.id !== idToDelete);
-                    localStorage.setItem('userAccounts', JSON.stringify(accounts));
-                    if (idToDelete.startsWith('siswa')) {
-                        let appointments = JSON.parse(localStorage.getItem('appointments') || '[]').filter(app => app.studentId !== idToDelete);
-                        localStorage.setItem('appointments', JSON.stringify(appointments));
-                        let chats = JSON.parse(localStorage.getItem('chats') || '{}');
-                        delete chats[idToDelete];
-                        localStorage.setItem('chats', JSON.stringify(chats));
-                        // Jika siswa yang dihapus sedang dipilih oleh Guru BK
-                        if (selectedStudentIdForGuru === idToDelete) {
-                            selectedStudentIdForGuru = null;
-                            // Perlu update tampilan Guru BK jika sedang terbuka
-                            if (guruBkView.classList.contains('view') && !guruBkView.classList.contains('hidden')) {
-                                renderGuruBkChatUsers();
-                            }
+                    if(confirm(`Anda yakin ingin menghapus pengguna ini? Semua data terkait (chat, janji temu) akan ikut terhapus.`)){
+                         // Di Supabase, kita sudah mengatur ON DELETE CASCADE,
+                         // jadi menghapus user akan otomatis menghapus data terkait di tabel lain.
+                        const { error } = await supabaseClient.from('userAccounts').delete().eq('id', idToDelete);
+                        if(error) {
+                            alert('Gagal menghapus user.');
+                            console.error('Error deleting user:', error);
+                        } else {
+                            renderUserListAdmin();
                         }
                     }
-                    renderUserListAdmin();
                 }
             });
 
@@ -925,34 +966,36 @@
             showLoginAdminBtn.addEventListener('click', () => showView(adminLoginView));
             backToRoleBtns.forEach(btn => btn.addEventListener('click', () => showView(roleSelectionView)));
 
-            studentLoginForm.addEventListener('submit', (e) => {
+            studentLoginForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
                 const username = e.target.elements['student-username-input'].value;
                 const password = e.target.elements['student-password-input'].value;
-                const accounts = JSON.parse(localStorage.getItem('userAccounts') || '[]');
-                const account = accounts.find(acc => acc.role === 'siswa' && acc.username === username && acc.password === password);
                 const errorEl = document.getElementById('student-login-error');
+
+                const { data: account, error } = await supabaseClient.from('userAccounts').select('*').eq('role', 'siswa').eq('username', username).eq('password', password).single();
+
                 if (account) {
                     errorEl.classList.add('hidden');
-                    localStorage.setItem('userRole', 'siswa');
-                    localStorage.setItem('currentUserId', account.id);
+                    sessionStorage.setItem('userRole', 'siswa');
+                    sessionStorage.setItem('currentUserId', account.id);
                     initSiswaView();
                 } else {
                     errorEl.classList.remove('hidden');
                 }
             });
 
-            guruBkLoginForm.addEventListener('submit', (e) => {
+            guruBkLoginForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
                 const username = e.target.elements['guru-bk-username-input'].value;
                 const password = e.target.elements['guru-bk-password-input'].value;
-                const accounts = JSON.parse(localStorage.getItem('userAccounts') || '[]');
-                const account = accounts.find(acc => acc.role === 'guru-bk' && acc.username === username && acc.password === password);
                 const errorEl = document.getElementById('guru-bk-login-error');
+                
+                const { data: account, error } = await supabaseClient.from('userAccounts').select('*').eq('role', 'guru-bk').eq('username', username).eq('password', password).single();
+
                 if (account) {
                     errorEl.classList.add('hidden');
-                    localStorage.setItem('userRole', 'guru-bk');
-                    localStorage.setItem('currentUserId', account.id);
+                    sessionStorage.setItem('userRole', 'guru-bk');
+                    sessionStorage.setItem('currentUserId', account.id);
                     initGuruBkView();
                 } else {
                     errorEl.classList.remove('hidden');
@@ -965,7 +1008,7 @@
                 const errorEl = document.getElementById('admin-login-error');
                 if (password === adminPassword) {
                     errorEl.classList.add('hidden');
-                    localStorage.setItem('userRole', 'admin');
+                    sessionStorage.setItem('userRole', 'admin');
                     initAdminView();
                 } else {
                     errorEl.classList.remove('hidden');
@@ -975,14 +1018,16 @@
 
             logoutBtns.forEach(btn => {
                 btn.addEventListener('click', () => {
-                    localStorage.removeItem('userRole');
-                    localStorage.removeItem('currentUserId');
+                    sessionStorage.removeItem('userRole');
+                    sessionStorage.removeItem('currentUserId');
+                    // Reset selected student for guru on logout
+                    selectedStudentIdForGuru = null;
                     showView(roleSelectionView);
                 });
             });
 
             // Inisiasi saat halaman dimuat
-            const savedRole = localStorage.getItem('userRole');
+            const savedRole = sessionStorage.getItem('userRole');
             if (savedRole === 'siswa') {
                 initSiswaView();
             } else if (savedRole === 'guru-bk') {
